@@ -14,7 +14,7 @@ import {
   LiveKitRoom,
   VideoConference,
 } from "@livekit/components-react";
-import "@livekit/components-styles";
+
 
 export default function TeacherLiveStream() {
   const { user, role } = useAuth();
