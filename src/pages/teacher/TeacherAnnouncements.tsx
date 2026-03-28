@@ -16,7 +16,7 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
 export default function TeacherAnnouncements() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
@@ -24,9 +24,14 @@ export default function TeacherAnnouncements() {
 
   const fetchData = async () => {
     if (!user) return;
+    const isAdmin = role === "admin";
     const [annRes, clsRes] = await Promise.all([
-      supabase.from("announcements").select("*").eq("author_id", user.id).order("created_at", { ascending: false }),
-      supabase.from("classes").select("id, name").eq("teacher_id", user.id),
+      isAdmin
+        ? supabase.from("announcements").select("*").order("created_at", { ascending: false })
+        : supabase.from("announcements").select("*").eq("author_id", user.id).order("created_at", { ascending: false }),
+      isAdmin
+        ? supabase.from("classes").select("id, name")
+        : supabase.from("classes").select("id, name").eq("teacher_id", user.id),
     ]);
     if (annRes.data) setAnnouncements(annRes.data);
     if (clsRes.data) setClasses(clsRes.data);
