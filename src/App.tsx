@@ -76,6 +76,7 @@ function AppRoutes() {
 
   return (
     <Routes>
+      <Route path="/login" element={<Navigate to={homeRoute} replace />} />
       <Route path="/" element={<Navigate to={homeRoute} replace />} />
 
       {/* Teacher routes */}
