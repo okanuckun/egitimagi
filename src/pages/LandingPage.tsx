@@ -270,14 +270,19 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t py-8">
-        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-              <GraduationCap className="w-4 h-4 text-primary-foreground" />
+        <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                <GraduationCap className="w-4 h-4 text-primary-foreground" />
+              </div>
+              <span className="font-display font-bold text-sm">Eğitim Ağı</span>
             </div>
-            <span className="font-display font-bold text-sm">Eğitim Ağı</span>
+            <p className="text-xs text-muted-foreground">© 2026 Eğitim Ağı. Tüm hakları saklıdır.</p>
           </div>
-          <p className="text-xs text-muted-foreground">© 2026 Eğitim Ağı. Tüm hakları saklıdır.</p>
+          <p className="text-xs text-muted-foreground">
+            ❤️ ile <span className="font-semibold text-foreground">Ege Tulu</span> ve <span className="font-semibold text-foreground">Okan Uçkun</span> tarafından geliştirildi.
+          </p>
         </div>
       </footer>
     </div>
