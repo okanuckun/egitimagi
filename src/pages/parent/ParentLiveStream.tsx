@@ -87,7 +87,7 @@ export default function ParentLiveStream() {
     setSelectedStream(null);
   };
 
-  const wsUrl = import.meta.env.VITE_LIVEKIT_WS_URL;
+  
 
   if (token && selectedStream && wsUrl) {
     return (
