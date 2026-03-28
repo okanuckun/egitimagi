@@ -42,7 +42,7 @@ export default function TeacherLiveStream() {
     try {
       const roomName = `class-${selectedClassId}-${Date.now()}`;
       const { data: stream, error: streamError } = await supabase
-        .from("live_streams" as Parameters<typeof supabase.from>[0])
+        .from("live_streams")
         .insert({ teacher_id: user.id, class_id: selectedClassId, room_name: roomName, title, status: "active" })
         .select().single();
       if (streamError) throw streamError;
@@ -73,7 +73,7 @@ export default function TeacherLiveStream() {
   const stopStream = async () => {
     if (activeStreamId) {
       await supabase
-        .from("live_streams" as Parameters<typeof supabase.from>[0])
+        .from("live_streams")
         .update({ status: "ended", ended_at: new Date().toISOString() })
         .eq("id", activeStreamId);
     }
