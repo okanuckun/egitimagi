@@ -42,9 +42,14 @@ export default function TeacherHomework() {
 
   const fetchData = async () => {
     if (!user) return;
+    const isAdmin = role === "admin";
     const [hwRes, clsRes] = await Promise.all([
-      supabase.from("homework").select("*").eq("teacher_id", user.id).order("due_date", { ascending: false }),
-      supabase.from("classes").select("id, name").eq("teacher_id", user.id),
+      isAdmin
+        ? supabase.from("homework").select("*").order("due_date", { ascending: false })
+        : supabase.from("homework").select("*").eq("teacher_id", user.id).order("due_date", { ascending: false }),
+      isAdmin
+        ? supabase.from("classes").select("id, name")
+        : supabase.from("classes").select("id, name").eq("teacher_id", user.id),
     ]);
     if (hwRes.data) setHomework(hwRes.data);
     if (clsRes.data) setClasses(clsRes.data);
