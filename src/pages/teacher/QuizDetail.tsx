@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import PageHeader from "@/components/PageHeader";
 import BottomNav from "@/components/BottomNav";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,12 +11,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
+interface QuizItem { id: string; title: string; subject: string; duration_minutes: number | null; description: string | null; }
+interface QuizQuestion { id: string; quiz_id: string; question: string; options: string[]; correct_answer: number; points: number; sort_order: number; }
+
 export default function QuizDetail() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [quiz, setQuiz] = useState<any>(null);
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [quiz, setQuiz] = useState<QuizItem | null>(null);
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ question: "", options: ["", "", "", ""], correct_answer: 0, points: "10" });
 
@@ -27,8 +29,8 @@ export default function QuizDetail() {
       supabase.from("quizzes").select("*").eq("id", id).single(),
       supabase.from("quiz_questions").select("*").eq("quiz_id", id).order("sort_order"),
     ]);
-    setQuiz(qRes.data);
-    setQuestions(questionsRes.data || []);
+    setQuiz(qRes.data as QuizItem | null);
+    setQuestions((questionsRes.data as QuizQuestion[]) || []);
   };
 
   useEffect(() => { fetchData(); }, [id]);
@@ -127,7 +129,7 @@ export default function QuizDetail() {
                     {q.question}
                   </p>
                   <div className="space-y-1">
-                    {(q.options as string[]).map((opt: string, oi: number) => (
+                    {q.options.map((opt, oi) => (
                       <p key={oi} className={`text-xs px-2 py-1 rounded ${oi === q.correct_answer ? "bg-success/10 text-success font-medium" : "text-muted-foreground"}`}>
                         {String.fromCharCode(65 + oi)}) {opt}
                       </p>
