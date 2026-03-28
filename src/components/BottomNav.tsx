@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, BookOpen, Users, Bell, Settings, BarChart3, Eye } from "lucide-react";
+import { Home, BookOpen, Users, Bell, Settings, BarChart3 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,6 @@ const adminNav: NavItem[] = [
   { icon: Users, label: "Kullanıcılar", path: "/admin/users" },
   { icon: Settings, label: "Sınıflar", path: "/admin/classes" },
   { icon: Bell, label: "Duyurular", path: "/admin/announcements" },
-  { icon: Eye, label: "Öğretmen", path: "/teacher" },
 ];
 
 export default function BottomNav() {
@@ -35,22 +34,16 @@ export default function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isAdminViewingOther = role === "admin" && (location.pathname.startsWith("/teacher") || location.pathname.startsWith("/parent"));
-
+  // Admin viewing teacher/parent pages gets their nav + back to admin
   let navItems: NavItem[];
   if (role === "admin" && location.pathname.startsWith("/teacher")) {
     navItems = [
-      { icon: Home, label: "Ana Sayfa", path: "/teacher" },
-      { icon: BookOpen, label: "Ödevler", path: "/teacher/homework" },
-      { icon: Users, label: "Öğrenciler", path: "/teacher/students" },
-      { icon: Bell, label: "Duyurular", path: "/teacher/announcements" },
+      ...teacherNav,
       { icon: Settings, label: "Admin", path: "/admin" },
     ];
   } else if (role === "admin" && location.pathname.startsWith("/parent")) {
     navItems = [
-      { icon: Home, label: "Ana Sayfa", path: "/parent" },
-      { icon: BookOpen, label: "Ödevler", path: "/parent/homework" },
-      { icon: BarChart3, label: "Performans", path: "/parent/performance" },
+      ...parentNav,
       { icon: Settings, label: "Admin", path: "/admin" },
     ];
   } else {
