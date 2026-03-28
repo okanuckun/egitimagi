@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   GraduationCap, MessageCircle, ClipboardCheck, Calendar, FileQuestion,
   FolderOpen, BookOpen, Video, Bell, BarChart3, Users, Shield,
-  ArrowRight, CheckCircle, Sparkles
+  ArrowRight, CheckCircle, Sparkles, Brain, Wand2, PenTool, Lightbulb, Zap, Bot
 } from "lucide-react";
 
 const features = [
