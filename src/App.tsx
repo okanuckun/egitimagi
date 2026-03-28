@@ -24,6 +24,7 @@ import ParentPerformance from "./pages/parent/ParentPerformance";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminClasses from "./pages/admin/AdminClasses";
+import AdminClassDetail from "./pages/admin/AdminClassDetail";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 
 const queryClient = new QueryClient();
