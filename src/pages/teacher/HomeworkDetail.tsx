@@ -17,6 +17,7 @@ interface StudentGrade {
   student_name: string;
   grade: HomeworkGrade;
   grade_id?: string;
+  note?: string;
 }
 
 const gradeLabels: Record<HomeworkGrade, string> = {
@@ -60,6 +61,7 @@ export default function HomeworkDetail() {
           student_name: s.full_name,
           grade: g?.grade || "not_done",
           grade_id: g?.id,
+          note: (g as any)?.note || "",
         };
       });
       setStudentGrades(list);
@@ -70,16 +72,38 @@ export default function HomeworkDetail() {
 
   const handleGrade = async (studentId: string, grade: HomeworkGrade, existingGradeId?: string) => {
     if (existingGradeId) {
-      await supabase.from("homework_grades").update({ grade, graded_at: new Date().toISOString() }).eq("id", existingGradeId);
+      await supabase.from("homework_grades").update({ grade, graded_at: new Date().toISOString() } as any).eq("id", existingGradeId);
     } else {
       await supabase.from("homework_grades").insert({
         homework_id: id!,
         student_id: studentId,
         grade,
         graded_at: new Date().toISOString(),
-      });
+      } as any);
     }
     toast.success("Not güncellendi");
+    fetchData();
+  };
+
+  const handleNoteChange = (studentId: string, note: string) => {
+    setStudentGrades((prev) =>
+      prev.map((sg) => (sg.student_id === studentId ? { ...sg, note } : sg))
+    );
+  };
+
+  const handleNoteSave = async (sg: StudentGrade) => {
+    if (sg.grade_id) {
+      await supabase.from("homework_grades").update({ note: sg.note } as any).eq("id", sg.grade_id);
+    } else {
+      await supabase.from("homework_grades").insert({
+        homework_id: id!,
+        student_id: sg.student_id,
+        grade: sg.grade,
+        note: sg.note,
+        graded_at: new Date().toISOString(),
+      } as any);
+    }
+    toast.success("Not kaydedildi");
     fetchData();
   };
 
@@ -127,6 +151,21 @@ export default function HomeworkDetail() {
                     </button>
                   );
                 })}
+              </div>
+              <div className="mt-3 flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Not ekle..."
+                  value={sg.note || ""}
+                  onChange={(e) => handleNoteChange(sg.student_id, e.target.value)}
+                  className="flex-1 text-xs px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <button
+                  onClick={() => handleNoteSave(sg)}
+                  className="text-xs px-3 py-2 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
+                >
+                  Kaydet
+                </button>
               </div>
             </CardContent>
           </Card>

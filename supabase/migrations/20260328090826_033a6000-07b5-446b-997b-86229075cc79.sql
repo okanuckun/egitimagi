@@ -1,0 +1,1 @@
+ALTER TABLE public.homework_grades ADD COLUMN note text DEFAULT null;
