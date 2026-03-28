@@ -121,6 +121,7 @@ export type Database = {
           graded_at: string | null
           homework_id: string
           id: string
+          note: string | null
           student_id: string
         }
         Insert: {
@@ -129,6 +130,7 @@ export type Database = {
           graded_at?: string | null
           homework_id: string
           id?: string
+          note?: string | null
           student_id: string
         }
         Update: {
@@ -137,6 +139,7 @@ export type Database = {
           graded_at?: string | null
           homework_id?: string
           id?: string
+          note?: string | null
           student_id?: string
         }
         Relationships: [
