@@ -11,38 +11,26 @@ import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
 
-interface UserWithRole {
-  user_id: string;
-  full_name: string;
-  role: AppRole | null;
-}
+interface UserWithRole { user_id: string; full_name: string; role: AppRole | null; }
+interface RoleRow { user_id: string; role: AppRole; }
 
-const roleLabels: Record<AppRole, string> = {
-  admin: "Yönetici",
-  teacher: "Öğretmen",
-  parent: "Veli",
-};
+const roleLabels: Record<AppRole, string> = { admin: "Yönetici", teacher: "Öğretmen", parent: "Veli" };
 
 export default function AdminUsers() {
   const { user } = useAuth();
   const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchUsers = async () => {
-    // Use SECURITY DEFINER functions to bypass RLS
     const [profilesRes, rolesRes] = await Promise.all([
       supabase.from("profiles").select("user_id, full_name"),
       supabase.rpc("admin_list_all_roles"),
     ]);
-
-    const roleMap = new Map(
-      (rolesRes.data as any[] || []).map((r: any) => [r.user_id, r.role])
-    );
-
+    const roleMap = new Map((rolesRes.data as RoleRow[] || []).map((r) => [r.user_id, r.role]));
     setUsers(
       (profilesRes.data || []).map((p) => ({
-        user_id: p.user_id,
-        full_name: p.full_name,
-        role: (roleMap.get(p.user_id) as AppRole) || null,
+        user_id: p.user_id, full_name: p.full_name,
+        role: roleMap.get(p.user_id) || null,
       }))
     );
   };
@@ -50,16 +38,15 @@ export default function AdminUsers() {
   useEffect(() => { fetchUsers(); }, []);
 
   const handleRoleChange = async (userId: string, newRole: AppRole) => {
+    setLoading(true);
     const { error } = await supabase.rpc("admin_update_user_role", {
       _target_user_id: userId,
       _new_role: newRole,
     });
-    if (error) {
-      toast.error("Rol güncellenemedi: " + error.message);
-    } else {
-      toast.success("Rol güncellendi");
-    }
-    fetchUsers();
+    if (error) toast.error("Rol güncellenemedi: " + error.message);
+    else toast.success("Rol güncellendi");
+    await fetchUsers();
+    setLoading(false);
   };
 
   return (
@@ -78,17 +65,10 @@ export default function AdminUsers() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-sm">{u.full_name || "İsimsiz"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {u.role ? roleLabels[u.role] : "Rol atanmamış"}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{u.role ? roleLabels[u.role] : "Rol atanmamış"}</p>
                   </div>
-                  <Select
-                    value={u.role || ""}
-                    onValueChange={(v) => handleRoleChange(u.user_id, v as AppRole)}
-                  >
-                    <SelectTrigger className="w-32">
-                      <SelectValue placeholder="Rol seç" />
-                    </SelectTrigger>
+                  <Select value={u.role || ""} onValueChange={(v) => handleRoleChange(u.user_id, v as AppRole)} disabled={loading}>
+                    <SelectTrigger className="w-32"><SelectValue placeholder="Rol seç" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="admin">Yönetici</SelectItem>
                       <SelectItem value="teacher">Öğretmen</SelectItem>
