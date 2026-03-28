@@ -62,17 +62,17 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Navigate to={homeRoute} replace />} />
 
-      {/* Teacher routes */}
-      <Route path="/teacher" element={role === "teacher" ? <TeacherDashboard /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/homework" element={role === "teacher" ? <TeacherHomework /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/homework/:id" element={role === "teacher" ? <HomeworkDetail /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/students" element={role === "teacher" ? <TeacherStudents /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/announcements" element={role === "teacher" ? <TeacherAnnouncements /> : <Navigate to={homeRoute} />} />
+      {/* Teacher routes - admin can also access */}
+      <Route path="/teacher" element={role === "teacher" || role === "admin" ? <TeacherDashboard /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/homework" element={role === "teacher" || role === "admin" ? <TeacherHomework /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/homework/:id" element={role === "teacher" || role === "admin" ? <HomeworkDetail /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/students" element={role === "teacher" || role === "admin" ? <TeacherStudents /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/announcements" element={role === "teacher" || role === "admin" ? <TeacherAnnouncements /> : <Navigate to={homeRoute} />} />
 
-      {/* Parent routes */}
-      <Route path="/parent" element={role === "parent" ? <ParentDashboard /> : <Navigate to={homeRoute} />} />
-      <Route path="/parent/homework" element={role === "parent" ? <ParentHomework /> : <Navigate to={homeRoute} />} />
-      <Route path="/parent/performance" element={role === "parent" ? <ParentPerformance /> : <Navigate to={homeRoute} />} />
+      {/* Parent routes - admin can also access */}
+      <Route path="/parent" element={role === "parent" || role === "admin" ? <ParentDashboard /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/homework" element={role === "parent" || role === "admin" ? <ParentHomework /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/performance" element={role === "parent" || role === "admin" ? <ParentPerformance /> : <Navigate to={homeRoute} />} />
 
       {/* Admin routes */}
       <Route path="/admin" element={role === "admin" ? <AdminDashboard /> : <Navigate to={homeRoute} />} />
