@@ -48,7 +48,7 @@ export default function Login() {
           <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-4">
             <GraduationCap className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-display font-bold text-foreground">Ödev Takip</h1>
+          <h1 className="text-2xl font-display font-bold text-foreground">Eğitim Ağı</h1>
           <p className="text-muted-foreground text-sm mt-1">Öğretmen, veli ve yönetici portalı</p>
         </div>
 
