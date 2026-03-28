@@ -76,6 +76,7 @@ function AppRoutes() {
       <Route path="/parent" element={role === "parent" || role === "admin" ? <ParentDashboard /> : <Navigate to={homeRoute} />} />
       <Route path="/parent/homework" element={role === "parent" || role === "admin" ? <ParentHomework /> : <Navigate to={homeRoute} />} />
       <Route path="/parent/performance" element={role === "parent" || role === "admin" ? <ParentPerformance /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/live" element={role === "parent" || role === "admin" ? <ParentLiveStream /> : <Navigate to={homeRoute} />} />
 
       {/* Admin routes */}
       <Route path="/admin" element={role === "admin" ? <AdminDashboard /> : <Navigate to={homeRoute} />} />
