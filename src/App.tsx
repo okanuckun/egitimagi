@@ -14,11 +14,13 @@ import TeacherHomework from "./pages/teacher/TeacherHomework";
 import HomeworkDetail from "./pages/teacher/HomeworkDetail";
 import TeacherStudents from "./pages/teacher/TeacherStudents";
 import TeacherAnnouncements from "./pages/teacher/TeacherAnnouncements";
+import TeacherLiveStream from "./pages/teacher/TeacherLiveStream";
 
 // Parent pages
 import ParentDashboard from "./pages/parent/ParentDashboard";
 import ParentHomework from "./pages/parent/ParentHomework";
 import ParentPerformance from "./pages/parent/ParentPerformance";
+import ParentLiveStream from "./pages/parent/ParentLiveStream";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -68,11 +70,13 @@ function AppRoutes() {
       <Route path="/teacher/homework/:id" element={role === "teacher" || role === "admin" ? <HomeworkDetail /> : <Navigate to={homeRoute} />} />
       <Route path="/teacher/students" element={role === "teacher" || role === "admin" ? <TeacherStudents /> : <Navigate to={homeRoute} />} />
       <Route path="/teacher/announcements" element={role === "teacher" || role === "admin" ? <TeacherAnnouncements /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/live" element={role === "teacher" || role === "admin" ? <TeacherLiveStream /> : <Navigate to={homeRoute} />} />
 
       {/* Parent routes - admin can also access */}
       <Route path="/parent" element={role === "parent" || role === "admin" ? <ParentDashboard /> : <Navigate to={homeRoute} />} />
       <Route path="/parent/homework" element={role === "parent" || role === "admin" ? <ParentHomework /> : <Navigate to={homeRoute} />} />
       <Route path="/parent/performance" element={role === "parent" || role === "admin" ? <ParentPerformance /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/live" element={role === "parent" || role === "admin" ? <ParentLiveStream /> : <Navigate to={homeRoute} />} />
 
       {/* Admin routes */}
       <Route path="/admin" element={role === "admin" ? <AdminDashboard /> : <Navigate to={homeRoute} />} />

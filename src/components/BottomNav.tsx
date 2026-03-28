@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, BookOpen, Users, Bell, Settings, BarChart3 } from "lucide-react";
+import { Home, BookOpen, Users, Bell, Settings, BarChart3, Video } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,7 @@ const teacherNav: NavItem[] = [
   { icon: Home, label: "Ana Sayfa", path: "/teacher" },
   { icon: BookOpen, label: "Ödevler", path: "/teacher/homework" },
   { icon: Users, label: "Öğrenciler", path: "/teacher/students" },
+  { icon: Video, label: "Canlı", path: "/teacher/live" },
   { icon: Bell, label: "Duyurular", path: "/teacher/announcements" },
 ];
 
@@ -20,6 +21,7 @@ const parentNav: NavItem[] = [
   { icon: Home, label: "Ana Sayfa", path: "/parent" },
   { icon: BookOpen, label: "Ödevler", path: "/parent/homework" },
   { icon: BarChart3, label: "Performans", path: "/parent/performance" },
+  { icon: Video, label: "Canlı", path: "/parent/live" },
 ];
 
 const adminNav: NavItem[] = [
