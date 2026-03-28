@@ -9,8 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, GraduationCap, Pencil, Trash2, Users, ChevronRight } from "lucide-react";
+import { Plus, GraduationCap, Pencil, Trash2, Users, ChevronRight, UserRound } from "lucide-react";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
+
+type AppRole = Database["public"]["Enums"]["app_role"];
 
 interface ClassWithCount {
   id: string;
@@ -21,10 +24,24 @@ interface ClassWithCount {
   teacher_name?: string;
 }
 
+interface TeacherInfo {
+  user_id: string;
+  full_name: string;
+  class_count: number;
+  student_count: number;
+}
+
+const roleLabels: Record<AppRole, string> = {
+  admin: "Yönetici",
+  teacher: "Öğretmen",
+  parent: "Veli",
+};
+
 export default function AdminClasses() {
   const navigate = useNavigate();
   const [classes, setClasses] = useState<ClassWithCount[]>([]);
   const [teachers, setTeachers] = useState<{ user_id: string; full_name: string }[]>([]);
+  const [teacherInfos, setTeacherInfos] = useState<TeacherInfo[]>([]);
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editClass, setEditClass] = useState<ClassWithCount | null>(null);
@@ -46,20 +63,29 @@ export default function AdminClasses() {
       setTeachers(teacherList);
     }
 
-    if (clsRes.data) {
-      const studentCounts: Record<string, number> = {};
-      studentsRes.data?.forEach((s) => {
-        studentCounts[s.class_id] = (studentCounts[s.class_id] || 0) + 1;
-      });
+    const studentCounts: Record<string, number> = {};
+    studentsRes.data?.forEach((s) => {
+      studentCounts[s.class_id] = (studentCounts[s.class_id] || 0) + 1;
+    });
 
-      setClasses(
-        clsRes.data.map((c) => ({
-          ...c,
-          student_count: studentCounts[c.id] || 0,
-          teacher_name: teacherList.find((t) => t.user_id === c.teacher_id)?.full_name || "—",
-        }))
-      );
-    }
+    const classesData = (clsRes.data || []).map((c) => ({
+      ...c,
+      student_count: studentCounts[c.id] || 0,
+      teacher_name: teacherList.find((t) => t.user_id === c.teacher_id)?.full_name || "—",
+    }));
+    setClasses(classesData);
+
+    // Build teacher info with class/student counts
+    const infos: TeacherInfo[] = teacherList.map((t) => {
+      const tClasses = classesData.filter((c) => c.teacher_id === t.user_id);
+      return {
+        user_id: t.user_id,
+        full_name: t.full_name,
+        class_count: tClasses.length,
+        student_count: tClasses.reduce((sum, c) => sum + c.student_count, 0),
+      };
+    });
+    setTeacherInfos(infos);
   };
 
   useEffect(() => { fetchData(); }, []);
@@ -131,65 +157,108 @@ export default function AdminClasses() {
 
   return (
     <div className="page-container">
-      <PageHeader title="Sınıflar" subtitle="Sınıf yönetimi" />
+      <PageHeader title="Sınıflar & Öğretmenler" subtitle="Sınıf ve öğretmen yönetimi" />
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button className="w-full mb-4"><Plus className="w-4 h-4 mr-2" /> Yeni Sınıf</Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-sm mx-auto">
-          <DialogHeader><DialogTitle>Yeni Sınıf</DialogTitle></DialogHeader>
-          <ClassForm formState={form} setFormState={setForm} onSubmit={handleCreate} submitLabel="Oluştur" />
-        </DialogContent>
-      </Dialog>
+      {/* Sınıflar Bölümü */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-base font-display font-bold text-foreground flex items-center gap-2">
+            <GraduationCap className="w-5 h-5 text-primary" />
+            Sınıflar
+          </h2>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline"><Plus className="w-4 h-4 mr-1" /> Ekle</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-sm mx-auto">
+              <DialogHeader><DialogTitle>Yeni Sınıf</DialogTitle></DialogHeader>
+              <ClassForm formState={form} setFormState={setForm} onSubmit={handleCreate} submitLabel="Oluştur" />
+            </DialogContent>
+          </Dialog>
+        </div>
 
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="max-w-sm mx-auto">
-          <DialogHeader><DialogTitle>Sınıfı Düzenle</DialogTitle></DialogHeader>
-          <ClassForm formState={editForm} setFormState={setEditForm} onSubmit={handleEdit} submitLabel="Güncelle" />
-        </DialogContent>
-      </Dialog>
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent className="max-w-sm mx-auto">
+            <DialogHeader><DialogTitle>Sınıfı Düzenle</DialogTitle></DialogHeader>
+            <ClassForm formState={editForm} setFormState={setEditForm} onSubmit={handleEdit} submitLabel="Güncelle" />
+          </DialogContent>
+        </Dialog>
 
-      <div className="space-y-3">
-        {classes.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            <GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">Henüz sınıf yok</p>
-          </div>
-        ) : (
-          classes.map((c) => (
-            <Card key={c.id} className="card-hover cursor-pointer" onClick={() => navigate(`/admin/classes/${c.id}`)}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-semibold text-sm text-foreground">{c.name}</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">{c.teacher_name}</p>
-                    <div className="flex items-center gap-1 mt-1.5 text-xs text-muted-foreground">
-                      <Users className="w-3.5 h-3.5" />
-                      <span>{c.student_count} öğrenci</span>
+        <div className="space-y-2">
+          {classes.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <GraduationCap className="w-10 h-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">Henüz sınıf yok</p>
+            </div>
+          ) : (
+            classes.map((c) => (
+              <Card key={c.id} className="card-hover cursor-pointer" onClick={() => navigate(`/admin/classes/${c.id}`)}>
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display font-semibold text-sm text-foreground">{c.name}</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">{c.teacher_name}</p>
+                      <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                        <Users className="w-3.5 h-3.5" />
+                        <span>{c.student_count} öğrenci</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openEdit(c); }}
+                        className="p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(c.id, c.name); }}
+                        className="p-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground ml-1" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); openEdit(c); }}
-                      className="p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(c.id, c.name); }}
-                      className="p-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground ml-1" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
+
+      {/* Öğretmenler Bölümü */}
+      <div className="mb-6">
+        <h2 className="text-base font-display font-bold text-foreground flex items-center gap-2 mb-3">
+          <UserRound className="w-5 h-5 text-primary" />
+          Öğretmenler
+        </h2>
+
+        <div className="space-y-2">
+          {teacherInfos.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <UserRound className="w-10 h-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">Henüz öğretmen yok</p>
+            </div>
+          ) : (
+            teacherInfos.map((t) => (
+              <Card key={t.user_id} className="card-hover">
+                <CardContent className="p-3 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <UserRound className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground">{t.full_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t.class_count} sınıf · {t.student_count} öğrenci
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+      </div>
+
       <BottomNav />
     </div>
   );
