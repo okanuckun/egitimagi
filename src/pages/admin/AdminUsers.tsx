@@ -4,9 +4,8 @@ import { useAuth } from "@/hooks/useAuth";
 import PageHeader from "@/components/PageHeader";
 import BottomNav from "@/components/BottomNav";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Shield } from "lucide-react";
+import { Users } from "lucide-react";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -16,7 +15,6 @@ interface UserWithRole {
   user_id: string;
   full_name: string;
   role: AppRole | null;
-  role_id: string | null;
 }
 
 const roleLabels: Record<AppRole, string> = {
@@ -30,35 +28,36 @@ export default function AdminUsers() {
   const [users, setUsers] = useState<UserWithRole[]>([]);
 
   const fetchUsers = async () => {
-    const profilesRes = await supabase.from("profiles").select("user_id, full_name");
-    const rolesRes = await supabase.from("user_roles").select("*");
+    // Use SECURITY DEFINER functions to bypass RLS
+    const [profilesRes, rolesRes] = await Promise.all([
+      supabase.from("profiles").select("user_id, full_name"),
+      supabase.rpc("admin_list_all_roles"),
+    ]);
 
-    const roleMap = new Map(rolesRes.data?.map((r) => [r.user_id, r]) || []);
+    const roleMap = new Map(
+      (rolesRes.data as any[] || []).map((r: any) => [r.user_id, r.role])
+    );
 
     setUsers(
-      (profilesRes.data || []).map((p) => {
-        const r = roleMap.get(p.user_id);
-        return {
-          user_id: p.user_id,
-          full_name: p.full_name,
-          role: r?.role || null,
-          role_id: r?.id || null,
-        };
-      })
+      (profilesRes.data || []).map((p) => ({
+        user_id: p.user_id,
+        full_name: p.full_name,
+        role: (roleMap.get(p.user_id) as AppRole) || null,
+      }))
     );
   };
 
   useEffect(() => { fetchUsers(); }, []);
 
-  const handleRoleChange = async (userId: string, newRole: AppRole, existingRoleId: string | null) => {
-    if (existingRoleId) {
-      const { error } = await supabase.from("user_roles").update({ role: newRole }).eq("id", existingRoleId);
-      if (error) toast.error("Rol güncellenemedi");
-      else toast.success("Rol güncellendi");
+  const handleRoleChange = async (userId: string, newRole: AppRole) => {
+    const { error } = await supabase.rpc("admin_update_user_role", {
+      _target_user_id: userId,
+      _new_role: newRole,
+    });
+    if (error) {
+      toast.error("Rol güncellenemedi: " + error.message);
     } else {
-      const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: newRole });
-      if (error) toast.error("Rol atanamadı");
-      else toast.success("Rol atandı");
+      toast.success("Rol güncellendi");
     }
     fetchUsers();
   };
@@ -85,7 +84,7 @@ export default function AdminUsers() {
                   </div>
                   <Select
                     value={u.role || ""}
-                    onValueChange={(v) => handleRoleChange(u.user_id, v as AppRole, u.role_id)}
+                    onValueChange={(v) => handleRoleChange(u.user_id, v as AppRole)}
                   >
                     <SelectTrigger className="w-32">
                       <SelectValue placeholder="Rol seç" />
