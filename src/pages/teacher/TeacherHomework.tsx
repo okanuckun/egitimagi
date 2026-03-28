@@ -33,7 +33,7 @@ interface ClassItem {
 }
 
 export default function TeacherHomework() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const navigate = useNavigate();
   const [homework, setHomework] = useState<Homework[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
