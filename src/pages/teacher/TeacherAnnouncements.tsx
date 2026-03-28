@@ -15,10 +15,13 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
+interface Announcement { id: string; title: string; content: string; author_id: string; class_id: string | null; created_at: string; }
+interface ClassItem { id: string; name: string; }
+
 export default function TeacherAnnouncements() {
   const { user, role } = useAuth();
-  const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [classes, setClasses] = useState<ClassItem[]>([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ title: "", content: "", class_id: "" });
 
@@ -33,7 +36,7 @@ export default function TeacherAnnouncements() {
         ? supabase.from("classes").select("id, name")
         : supabase.from("classes").select("id, name").eq("teacher_id", user.id),
     ]);
-    if (annRes.data) setAnnouncements(annRes.data);
+    if (annRes.data) setAnnouncements(annRes.data as Announcement[]);
     if (clsRes.data) setClasses(clsRes.data);
   };
 
@@ -88,7 +91,6 @@ export default function TeacherAnnouncements() {
           </form>
         </DialogContent>
       </Dialog>
-
       <div className="space-y-3">
         {announcements.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
