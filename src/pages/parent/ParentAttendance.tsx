@@ -8,6 +8,12 @@ import { CheckCircle, XCircle, Clock, AlertCircle, Calendar } from "lucide-react
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
+interface StudentItem { id: string; full_name: string; class_id: string; }
+interface AttendanceRecord {
+  id: string; student_id: string; class_id: string; date: string;
+  status: string; note: string | null; teacher_id: string; created_at: string;
+}
+
 const statusConfig = {
   present: { label: "Geldi", icon: CheckCircle, color: "text-success" },
   absent: { label: "Gelmedi", icon: XCircle, color: "text-destructive" },
@@ -17,26 +23,19 @@ const statusConfig = {
 
 export default function ParentAttendance() {
   const { user } = useAuth();
-  const [records, setRecords] = useState<any[]>([]);
-  const [children, setChildren] = useState<any[]>([]);
+  const [records, setRecords] = useState<AttendanceRecord[]>([]);
+  const [children, setChildren] = useState<StudentItem[]>([]);
 
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const { data: students } = await supabase
-        .from("students")
-        .select("id, full_name, class_id")
-        .eq("parent_id", user.id);
+      const { data: students } = await supabase.from("students").select("id, full_name, class_id").eq("parent_id", user.id);
       setChildren(students || []);
-
       if (students?.length) {
-        const { data: att } = await supabase
-          .from("attendance")
-          .select("*")
+        const { data: att } = await supabase.from("attendance").select("*")
           .in("student_id", students.map((s) => s.id))
-          .order("date", { ascending: false })
-          .limit(30);
-        setRecords(att || []);
+          .order("date", { ascending: false }).limit(30);
+        setRecords((att as AttendanceRecord[]) || []);
       }
     };
     fetchData();
@@ -53,28 +52,24 @@ export default function ParentAttendance() {
             <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p className="text-sm">Yoklama kaydı yok</p>
           </div>
-        ) : (
-          records.map((r) => {
-            const config = statusConfig[r.status as keyof typeof statusConfig] || statusConfig.present;
-            const Icon = config.icon;
-            return (
-              <Card key={r.id}>
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-sm">{getStudentName(r.student_id)}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(r.date), "d MMMM yyyy, EEEE", { locale: tr })}
-                    </p>
-                  </div>
-                  <div className={`flex items-center gap-1 ${config.color}`}>
-                    <Icon className="w-4 h-4" />
-                    <span className="text-xs font-medium">{config.label}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })
-        )}
+        ) : records.map((r) => {
+          const config = statusConfig[r.status as keyof typeof statusConfig] || statusConfig.present;
+          const Icon = config.icon;
+          return (
+            <Card key={r.id}>
+              <CardContent className="p-4 flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">{getStudentName(r.student_id)}</p>
+                  <p className="text-xs text-muted-foreground">{format(new Date(r.date), "d MMMM yyyy, EEEE", { locale: tr })}</p>
+                </div>
+                <div className={`flex items-center gap-1 ${config.color}`}>
+                  <Icon className="w-4 h-4" />
+                  <span className="text-xs font-medium">{config.label}</span>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
       <BottomNav />
     </div>
