@@ -78,6 +78,7 @@ function AppRoutes() {
       <Route path="/admin" element={role === "admin" ? <AdminDashboard /> : <Navigate to={homeRoute} />} />
       <Route path="/admin/users" element={role === "admin" ? <AdminUsers /> : <Navigate to={homeRoute} />} />
       <Route path="/admin/classes" element={role === "admin" ? <AdminClasses /> : <Navigate to={homeRoute} />} />
+      <Route path="/admin/classes/:id" element={role === "admin" ? <AdminClassDetail /> : <Navigate to={homeRoute} />} />
       <Route path="/admin/announcements" element={role === "admin" ? <AdminAnnouncements /> : <Navigate to={homeRoute} />} />
 
       <Route path="*" element={<NotFound />} />
