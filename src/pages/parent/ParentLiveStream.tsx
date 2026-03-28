@@ -10,7 +10,7 @@ import {
   LiveKitRoom,
   VideoConference,
 } from "@livekit/components-react";
-import "@livekit/components-styles";
+
 import { toast } from "sonner";
 
 interface ActiveStream {
