@@ -61,6 +61,7 @@ export default function HomeworkDetail() {
           student_name: s.full_name,
           grade: g?.grade || "not_done",
           grade_id: g?.id,
+          note: (g as any)?.note || "",
         };
       });
       setStudentGrades(list);
