@@ -72,16 +72,38 @@ export default function HomeworkDetail() {
 
   const handleGrade = async (studentId: string, grade: HomeworkGrade, existingGradeId?: string) => {
     if (existingGradeId) {
-      await supabase.from("homework_grades").update({ grade, graded_at: new Date().toISOString() }).eq("id", existingGradeId);
+      await supabase.from("homework_grades").update({ grade, graded_at: new Date().toISOString() } as any).eq("id", existingGradeId);
     } else {
       await supabase.from("homework_grades").insert({
         homework_id: id!,
         student_id: studentId,
         grade,
         graded_at: new Date().toISOString(),
-      });
+      } as any);
     }
     toast.success("Not güncellendi");
+    fetchData();
+  };
+
+  const handleNoteChange = (studentId: string, note: string) => {
+    setStudentGrades((prev) =>
+      prev.map((sg) => (sg.student_id === studentId ? { ...sg, note } : sg))
+    );
+  };
+
+  const handleNoteSave = async (sg: StudentGrade) => {
+    if (sg.grade_id) {
+      await supabase.from("homework_grades").update({ note: sg.note } as any).eq("id", sg.grade_id);
+    } else {
+      await supabase.from("homework_grades").insert({
+        homework_id: id!,
+        student_id: sg.student_id,
+        grade: sg.grade,
+        note: sg.note,
+        graded_at: new Date().toISOString(),
+      } as any);
+    }
+    toast.success("Not kaydedildi");
     fetchData();
   };
 
