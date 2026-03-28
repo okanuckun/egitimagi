@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   GraduationCap, MessageCircle, ClipboardCheck, Calendar, FileQuestion,
   FolderOpen, BookOpen, Video, Bell, BarChart3, Users, Shield,
-  ArrowRight, CheckCircle, Sparkles
+  ArrowRight, CheckCircle, Sparkles, Brain, Wand2, PenTool, Lightbulb, Zap, Bot
 } from "lucide-react";
 
 const features = [
@@ -174,6 +174,80 @@ export default function LandingPage() {
                       </li>
                     ))}
                   </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AI Upcoming Section */}
+      <section className="py-16 md:py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-info/3 to-accent/3" />
+        <div className="relative max-w-5xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
+              <Sparkles className="w-3 h-3" />
+              Yakında Geliyor
+            </div>
+            <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">
+              Yapay Zeka Destekli <span className="text-primary">Öğretmen Asistanı</span>
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Yapay zeka ile öğretmenlik deneyiminizi bir üst seviyeye taşıyoruz. Akıllı araçlarla zamandan tasarruf edin.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                icon: Wand2,
+                title: "Otomatik Soru Üretimi",
+                desc: "Konuya göre AI ile çoktan seçmeli, açık uçlu ve doğru-yanlış soruları saniyeler içinde oluşturun.",
+                color: "from-primary/20 to-primary/5",
+              },
+              {
+                icon: PenTool,
+                title: "Ödev Değerlendirme Asistanı",
+                desc: "Öğrenci ödevlerini AI ile analiz edin, geri bildirim önerileri alın ve hızlıca notlandırın.",
+                color: "from-info/20 to-info/5",
+              },
+              {
+                icon: Brain,
+                title: "Ders Planı Oluşturucu",
+                desc: "Müfredata uygun haftalık ve günlük ders planlarını yapay zeka ile otomatik hazırlayın.",
+                color: "from-success/20 to-success/5",
+              },
+              {
+                icon: Lightbulb,
+                title: "Kişiselleştirilmiş Öneriler",
+                desc: "Her öğrenci için zayıf ve güçlü yönlere göre kişisel çalışma önerileri oluşturun.",
+                color: "from-warning/20 to-warning/5",
+              },
+              {
+                icon: Bot,
+                title: "Veli İletişim Asistanı",
+                desc: "Velilere gönderilecek bilgilendirme mesajlarını AI desteğiyle profesyonelce hazırlayın.",
+                color: "from-destructive/20 to-destructive/5",
+              },
+              {
+                icon: Zap,
+                title: "Akıllı Raporlama",
+                desc: "Sınıf performansı, devamsızlık trendleri ve ödev analizlerini AI ile özetleyin.",
+                color: "from-accent to-accent/30",
+              },
+            ].map((f) => (
+              <Card key={f.title} className="border-0 shadow-sm relative overflow-hidden group">
+                <div className={`absolute inset-0 bg-gradient-to-br ${f.color} opacity-50 group-hover:opacity-100 transition-opacity`} />
+                <CardContent className="p-5 relative">
+                  <div className="w-11 h-11 rounded-xl bg-background/80 backdrop-blur flex items-center justify-center mb-3 shadow-sm">
+                    <f.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-display font-bold text-sm">{f.title}</h3>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-semibold">YAKINDA</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
                 </CardContent>
               </Card>
             ))}
