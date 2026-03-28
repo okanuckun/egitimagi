@@ -83,6 +83,7 @@ export default function ParentLiveStream() {
 
   const leaveStream = () => {
     setToken(null);
+    setWsUrl(null);
     setSelectedStream(null);
   };
 
