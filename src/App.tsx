@@ -20,6 +20,7 @@ import TeacherLiveStream from "./pages/teacher/TeacherLiveStream";
 import ParentDashboard from "./pages/parent/ParentDashboard";
 import ParentHomework from "./pages/parent/ParentHomework";
 import ParentPerformance from "./pages/parent/ParentPerformance";
+import ParentLiveStream from "./pages/parent/ParentLiveStream";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
