@@ -17,6 +17,7 @@ interface StudentGrade {
   student_name: string;
   grade: HomeworkGrade;
   grade_id?: string;
+  note?: string;
 }
 
 const gradeLabels: Record<HomeworkGrade, string> = {
