@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, BookOpen, Users, Bell, Settings, BarChart3 } from "lucide-react";
+import { Home, BookOpen, Users, Bell, Settings, BarChart3, Video } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
