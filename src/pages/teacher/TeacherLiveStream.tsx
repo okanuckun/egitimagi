@@ -80,15 +80,8 @@ export default function TeacherLiveStream() {
 
       if (tokenError) throw tokenError;
 
-      // Get WS URL from env
-      const { data: configData } = await supabase.functions.invoke("livekit-token", {
-        body: { room_name: "__config__", identity: "__config__", get_ws_url: true },
-      });
-
       setToken(tokenData.token);
-      // WS URL will be set from the edge function or use env
-      const envWsUrl = import.meta.env.VITE_LIVEKIT_WS_URL;
-      setWsUrl(envWsUrl || null);
+      setWsUrl(tokenData.ws_url);
 
       toast.success("Yayın başlatılıyor...");
     } catch (error: any) {

@@ -73,6 +73,7 @@ export default function ParentLiveStream() {
       if (error) throw error;
 
       setToken(data.token);
+      setWsUrl(data.ws_url);
       setSelectedStream(stream);
     } catch (error: any) {
       toast.error("Yayına katılınamadı: " + error.message);
