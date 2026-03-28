@@ -73,7 +73,7 @@ export default function TeacherLiveStream() {
   const stopStream = async () => {
     if (activeStreamId) {
       await supabase
-        .from("live_streams" as Parameters<typeof supabase.from>[0])
+        .from("live_streams")
         .update({ status: "ended", ended_at: new Date().toISOString() })
         .eq("id", activeStreamId);
     }
