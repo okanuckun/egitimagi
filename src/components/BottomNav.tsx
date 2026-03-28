@@ -13,6 +13,7 @@ const teacherNav: NavItem[] = [
   { icon: Home, label: "Ana Sayfa", path: "/teacher" },
   { icon: BookOpen, label: "Ödevler", path: "/teacher/homework" },
   { icon: Users, label: "Öğrenciler", path: "/teacher/students" },
+  { icon: Video, label: "Canlı", path: "/teacher/live" },
   { icon: Bell, label: "Duyurular", path: "/teacher/announcements" },
 ];
 
