@@ -159,6 +159,47 @@ export type Database = {
           },
         ]
       }
+      live_streams: {
+        Row: {
+          class_id: string
+          ended_at: string | null
+          id: string
+          room_name: string
+          started_at: string
+          status: string
+          teacher_id: string
+          title: string
+        }
+        Insert: {
+          class_id: string
+          ended_at?: string | null
+          id?: string
+          room_name: string
+          started_at?: string
+          status?: string
+          teacher_id: string
+          title?: string
+        }
+        Update: {
+          class_id?: string
+          ended_at?: string | null
+          id?: string
+          room_name?: string
+          started_at?: string
+          status?: string
+          teacher_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_streams_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
