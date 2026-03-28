@@ -25,7 +25,7 @@ export default function ParentLiveStream() {
   const fetchActiveStreams = async () => {
     if (!user) return;
     const { data } = await supabase
-      .from("live_streams" as Parameters<typeof supabase.from>[0])
+      .from("live_streams")
       .select("*")
       .eq("status", "active");
     setActiveStreams((data as LiveStream[]) || []);
