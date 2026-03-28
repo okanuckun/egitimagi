@@ -15,12 +15,21 @@ import HomeworkDetail from "./pages/teacher/HomeworkDetail";
 import TeacherStudents from "./pages/teacher/TeacherStudents";
 import TeacherAnnouncements from "./pages/teacher/TeacherAnnouncements";
 import TeacherLiveStream from "./pages/teacher/TeacherLiveStream";
+import TeacherMessages from "./pages/teacher/TeacherMessages";
+import TeacherAttendance from "./pages/teacher/TeacherAttendance";
+import TeacherCalendar from "./pages/teacher/TeacherCalendar";
+import TeacherQuizzes from "./pages/teacher/TeacherQuizzes";
+import QuizDetail from "./pages/teacher/QuizDetail";
+import TeacherFiles from "./pages/teacher/TeacherFiles";
 
 // Parent pages
 import ParentDashboard from "./pages/parent/ParentDashboard";
 import ParentHomework from "./pages/parent/ParentHomework";
 import ParentPerformance from "./pages/parent/ParentPerformance";
 import ParentLiveStream from "./pages/parent/ParentLiveStream";
+import ParentMessages from "./pages/parent/ParentMessages";
+import ParentAttendance from "./pages/parent/ParentAttendance";
+import ParentCalendar from "./pages/parent/ParentCalendar";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -59,24 +68,35 @@ function AppRoutes() {
   }
 
   const homeRoute = role === "teacher" ? "/teacher" : role === "parent" ? "/parent" : "/admin";
+  const isTeacherOrAdmin = role === "teacher" || role === "admin";
+  const isParentOrAdmin = role === "parent" || role === "admin";
 
   return (
     <Routes>
       <Route path="/" element={<Navigate to={homeRoute} replace />} />
 
-      {/* Teacher routes - admin can also access */}
-      <Route path="/teacher" element={role === "teacher" || role === "admin" ? <TeacherDashboard /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/homework" element={role === "teacher" || role === "admin" ? <TeacherHomework /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/homework/:id" element={role === "teacher" || role === "admin" ? <HomeworkDetail /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/students" element={role === "teacher" || role === "admin" ? <TeacherStudents /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/announcements" element={role === "teacher" || role === "admin" ? <TeacherAnnouncements /> : <Navigate to={homeRoute} />} />
-      <Route path="/teacher/live" element={role === "teacher" || role === "admin" ? <TeacherLiveStream /> : <Navigate to={homeRoute} />} />
+      {/* Teacher routes */}
+      <Route path="/teacher" element={isTeacherOrAdmin ? <TeacherDashboard /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/homework" element={isTeacherOrAdmin ? <TeacherHomework /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/homework/:id" element={isTeacherOrAdmin ? <HomeworkDetail /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/students" element={isTeacherOrAdmin ? <TeacherStudents /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/announcements" element={isTeacherOrAdmin ? <TeacherAnnouncements /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/live" element={isTeacherOrAdmin ? <TeacherLiveStream /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/messages" element={isTeacherOrAdmin ? <TeacherMessages /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/attendance" element={isTeacherOrAdmin ? <TeacherAttendance /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/calendar" element={isTeacherOrAdmin ? <TeacherCalendar /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/quizzes" element={isTeacherOrAdmin ? <TeacherQuizzes /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/quizzes/:id" element={isTeacherOrAdmin ? <QuizDetail /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/files" element={isTeacherOrAdmin ? <TeacherFiles /> : <Navigate to={homeRoute} />} />
 
-      {/* Parent routes - admin can also access */}
-      <Route path="/parent" element={role === "parent" || role === "admin" ? <ParentDashboard /> : <Navigate to={homeRoute} />} />
-      <Route path="/parent/homework" element={role === "parent" || role === "admin" ? <ParentHomework /> : <Navigate to={homeRoute} />} />
-      <Route path="/parent/performance" element={role === "parent" || role === "admin" ? <ParentPerformance /> : <Navigate to={homeRoute} />} />
-      <Route path="/parent/live" element={role === "parent" || role === "admin" ? <ParentLiveStream /> : <Navigate to={homeRoute} />} />
+      {/* Parent routes */}
+      <Route path="/parent" element={isParentOrAdmin ? <ParentDashboard /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/homework" element={isParentOrAdmin ? <ParentHomework /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/performance" element={isParentOrAdmin ? <ParentPerformance /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/live" element={isParentOrAdmin ? <ParentLiveStream /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/messages" element={isParentOrAdmin ? <ParentMessages /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/attendance" element={isParentOrAdmin ? <ParentAttendance /> : <Navigate to={homeRoute} />} />
+      <Route path="/parent/calendar" element={isParentOrAdmin ? <ParentCalendar /> : <Navigate to={homeRoute} />} />
 
       {/* Admin routes */}
       <Route path="/admin" element={role === "admin" ? <AdminDashboard /> : <Navigate to={homeRoute} />} />
