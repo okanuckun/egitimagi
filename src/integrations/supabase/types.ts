@@ -260,6 +260,22 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_parent_in_class: {
+        Args: { _class_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_parent_of_homework_student: {
+        Args: { _homework_id: string; _student_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_teacher_of_class: {
+        Args: { _class_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_teacher_of_homework: {
+        Args: { _homework_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "teacher" | "parent"
