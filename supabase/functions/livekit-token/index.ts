@@ -38,7 +38,15 @@ Deno.serve(async (req) => {
 
     const userId = claimsData.claims.sub as string;
 
-    const { room_name, identity, is_publisher } = await req.json();
+    const { room_name, identity, is_publisher, get_ws_url } = await req.json();
+
+    const livekitWsUrl = Deno.env.get("LIVEKIT_WS_URL");
+
+    if (get_ws_url) {
+      return new Response(JSON.stringify({ ws_url: livekitWsUrl || "" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!room_name || !identity) {
       return new Response(JSON.stringify({ error: "room_name and identity required" }), {
