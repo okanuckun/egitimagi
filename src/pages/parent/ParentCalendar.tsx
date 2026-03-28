@@ -8,6 +8,12 @@ import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
+interface CalendarEvent {
+  id: string; title: string; description: string | null;
+  event_date: string; event_time: string | null;
+  class_id: string | null; author_id: string; event_type: string; created_at: string;
+}
+
 const eventTypeLabels: Record<string, string> = {
   exam: "Sınav", meeting: "Toplantı", holiday: "Tatil", general: "Genel", homework: "Ödev",
 };
@@ -19,13 +25,13 @@ const eventTypeColors: Record<string, string> = {
 
 export default function ParentCalendar() {
   const { user } = useAuth();
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
 
   useEffect(() => {
     if (!user) return;
     const fetchEvents = async () => {
       const { data } = await supabase.from("events").select("*").order("event_date", { ascending: true });
-      setEvents(data || []);
+      setEvents((data as CalendarEvent[]) || []);
     };
     fetchEvents();
   }, [user]);
@@ -39,27 +45,25 @@ export default function ParentCalendar() {
             <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p className="text-sm">Henüz etkinlik yok</p>
           </div>
-        ) : (
-          events.map((ev) => (
-            <Card key={ev.id}>
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${eventTypeColors[ev.event_type] || ""}`}>
-                      {eventTypeLabels[ev.event_type] || ev.event_type}
-                    </span>
-                    <h3 className="font-display font-semibold text-sm mt-1">{ev.title}</h3>
-                    {ev.description && <p className="text-xs text-muted-foreground mt-1">{ev.description}</p>}
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs font-medium">{format(new Date(ev.event_date), "d MMM", { locale: tr })}</p>
-                    {ev.event_time && <p className="text-[10px] text-muted-foreground">{ev.event_time.slice(0, 5)}</p>}
-                  </div>
+        ) : events.map((ev) => (
+          <Card key={ev.id}>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${eventTypeColors[ev.event_type] || ""}`}>
+                    {eventTypeLabels[ev.event_type] || ev.event_type}
+                  </span>
+                  <h3 className="font-display font-semibold text-sm mt-1">{ev.title}</h3>
+                  {ev.description && <p className="text-xs text-muted-foreground mt-1">{ev.description}</p>}
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+                <div className="text-right">
+                  <p className="text-xs font-medium">{format(new Date(ev.event_date), "d MMM", { locale: tr })}</p>
+                  {ev.event_time && <p className="text-[10px] text-muted-foreground">{ev.event_time.slice(0, 5)}</p>}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
       <BottomNav />
     </div>
