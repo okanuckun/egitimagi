@@ -14,6 +14,7 @@ import TeacherHomework from "./pages/teacher/TeacherHomework";
 import HomeworkDetail from "./pages/teacher/HomeworkDetail";
 import TeacherStudents from "./pages/teacher/TeacherStudents";
 import TeacherAnnouncements from "./pages/teacher/TeacherAnnouncements";
+import TeacherLiveStream from "./pages/teacher/TeacherLiveStream";
 
 // Parent pages
 import ParentDashboard from "./pages/parent/ParentDashboard";
