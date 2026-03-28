@@ -152,6 +152,21 @@ export default function HomeworkDetail() {
                   );
                 })}
               </div>
+              <div className="mt-3 flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Not ekle..."
+                  value={sg.note || ""}
+                  onChange={(e) => handleNoteChange(sg.student_id, e.target.value)}
+                  className="flex-1 text-xs px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <button
+                  onClick={() => handleNoteSave(sg)}
+                  className="text-xs px-3 py-2 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
+                >
+                  Kaydet
+                </button>
+              </div>
             </CardContent>
           </Card>
         ))}
