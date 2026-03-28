@@ -70,6 +70,7 @@ function AppRoutes() {
       <Route path="/teacher/homework/:id" element={role === "teacher" || role === "admin" ? <HomeworkDetail /> : <Navigate to={homeRoute} />} />
       <Route path="/teacher/students" element={role === "teacher" || role === "admin" ? <TeacherStudents /> : <Navigate to={homeRoute} />} />
       <Route path="/teacher/announcements" element={role === "teacher" || role === "admin" ? <TeacherAnnouncements /> : <Navigate to={homeRoute} />} />
+      <Route path="/teacher/live" element={role === "teacher" || role === "admin" ? <TeacherLiveStream /> : <Navigate to={homeRoute} />} />
 
       {/* Parent routes - admin can also access */}
       <Route path="/parent" element={role === "parent" || role === "admin" ? <ParentDashboard /> : <Navigate to={homeRoute} />} />
