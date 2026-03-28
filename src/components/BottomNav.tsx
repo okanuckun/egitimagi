@@ -21,6 +21,7 @@ const parentNav: NavItem[] = [
   { icon: Home, label: "Ana Sayfa", path: "/parent" },
   { icon: BookOpen, label: "Ödevler", path: "/parent/homework" },
   { icon: BarChart3, label: "Performans", path: "/parent/performance" },
+  { icon: Video, label: "Canlı", path: "/parent/live" },
 ];
 
 const adminNav: NavItem[] = [
