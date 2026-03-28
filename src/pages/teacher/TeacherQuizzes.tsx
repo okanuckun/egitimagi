@@ -11,14 +11,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, FileQuestion, Trash2 } from "lucide-react";
+import { Plus, FileQuestion } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
+interface ClassItem { id: string; name: string; }
+interface Quiz {
+  id: string; title: string; description: string | null; class_id: string;
+  teacher_id: string; subject: string; duration_minutes: number | null;
+  is_active: boolean; created_at: string;
+}
+
 export default function TeacherQuizzes() {
   const { user, role } = useAuth();
-  const [quizzes, setQuizzes] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [classes, setClasses] = useState<ClassItem[]>([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", class_id: "", subject: "", duration_minutes: "30" });
   const navigate = useNavigate();
@@ -34,7 +41,7 @@ export default function TeacherQuizzes() {
         ? supabase.from("classes").select("id, name")
         : supabase.from("classes").select("id, name").eq("teacher_id", user.id),
     ]);
-    setQuizzes(qRes.data || []);
+    setQuizzes((qRes.data as Quiz[]) || []);
     setClasses(clsRes.data || []);
   };
 
@@ -44,12 +51,9 @@ export default function TeacherQuizzes() {
     e.preventDefault();
     if (!user) return;
     const { error } = await supabase.from("quizzes").insert({
-      title: form.title,
-      description: form.description || null,
-      class_id: form.class_id,
-      teacher_id: user.id,
-      subject: form.subject,
-      duration_minutes: parseInt(form.duration_minutes) || 30,
+      title: form.title, description: form.description || null,
+      class_id: form.class_id, teacher_id: user.id,
+      subject: form.subject, duration_minutes: parseInt(form.duration_minutes) || 30,
     });
     if (error) toast.error("Quiz oluşturulamadı");
     else {
@@ -70,12 +74,9 @@ export default function TeacherQuizzes() {
   return (
     <div className="page-container">
       <PageHeader title="Quizler" subtitle="Online sınav ve testler" />
-
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className="w-full mb-4" disabled={classes.length === 0}>
-            <Plus className="w-4 h-4 mr-2" /> Yeni Quiz
-          </Button>
+          <Button className="w-full mb-4" disabled={classes.length === 0}><Plus className="w-4 h-4 mr-2" /> Yeni Quiz</Button>
         </DialogTrigger>
         <DialogContent className="max-w-sm mx-auto">
           <DialogHeader><DialogTitle>Yeni Quiz Oluştur</DialogTitle></DialogHeader>
@@ -84,57 +85,40 @@ export default function TeacherQuizzes() {
               <Label>Sınıf</Label>
               <Select value={form.class_id} onValueChange={(v) => setForm({ ...form, class_id: v })}>
                 <SelectTrigger><SelectValue placeholder="Sınıf seçin" /></SelectTrigger>
-                <SelectContent>
-                  {classes.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                </SelectContent>
+                <SelectContent>{classes.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Ders</Label>
-              <Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} required placeholder="Ör: Matematik" />
-            </div>
-            <div className="space-y-2">
-              <Label>Başlık</Label>
-              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
-            </div>
-            <div className="space-y-2">
-              <Label>Süre (dakika)</Label>
-              <Input type="number" value={form.duration_minutes} onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })} />
-            </div>
-            <div className="space-y-2">
-              <Label>Açıklama</Label>
-              <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} />
-            </div>
+            <div className="space-y-2"><Label>Ders</Label><Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} required placeholder="Ör: Matematik" /></div>
+            <div className="space-y-2"><Label>Başlık</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required /></div>
+            <div className="space-y-2"><Label>Süre (dakika)</Label><Input type="number" value={form.duration_minutes} onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })} /></div>
+            <div className="space-y-2"><Label>Açıklama</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
             <Button type="submit" className="w-full" disabled={!form.class_id}>Oluştur</Button>
           </form>
         </DialogContent>
       </Dialog>
-
       <div className="space-y-3">
         {quizzes.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <FileQuestion className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p className="text-sm">Henüz quiz yok</p>
           </div>
-        ) : (
-          quizzes.map((q) => (
-            <Card key={q.id} className="card-hover cursor-pointer" onClick={() => navigate(`/teacher/quizzes/${q.id}`)}>
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-display font-semibold text-sm">{q.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{q.subject} • {getClassName(q.class_id)}</p>
-                    <p className="text-xs text-muted-foreground">{q.duration_minutes} dakika</p>
-                  </div>
-                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <span className="text-[10px] text-muted-foreground">{q.is_active ? "Aktif" : "Pasif"}</span>
-                    <Switch checked={q.is_active} onCheckedChange={() => toggleActive(q.id, q.is_active)} />
-                  </div>
+        ) : quizzes.map((q) => (
+          <Card key={q.id} className="card-hover cursor-pointer" onClick={() => navigate(`/teacher/quizzes/${q.id}`)}>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="font-display font-semibold text-sm">{q.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">{q.subject} • {getClassName(q.class_id)}</p>
+                  <p className="text-xs text-muted-foreground">{q.duration_minutes} dakika</p>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                  <span className="text-[10px] text-muted-foreground">{q.is_active ? "Aktif" : "Pasif"}</span>
+                  <Switch checked={q.is_active} onCheckedChange={() => toggleActive(q.id, q.is_active)} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
       <BottomNav />
     </div>
