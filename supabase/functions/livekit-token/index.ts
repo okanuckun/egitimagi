@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
 
     const accessToken = await at.toJwt();
 
-    return new Response(JSON.stringify({ token: accessToken }), {
+    return new Response(JSON.stringify({ token: accessToken, ws_url: livekitWsUrl }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
