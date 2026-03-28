@@ -7,15 +7,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Users, CheckCircle, Clock } from "lucide-react";
 
 export default function TeacherDashboard() {
-  const { user, profile } = useAuth();
+  const { user, profile, role } = useAuth();
   const [stats, setStats] = useState({ classes: 0, students: 0, homework: 0, pending: 0 });
 
   useEffect(() => {
     if (!user) return;
+    const isAdmin = role === "admin";
     const fetchStats = async () => {
       const [classesRes, homeworkRes] = await Promise.all([
-        supabase.from("classes").select("id").eq("teacher_id", user.id),
-        supabase.from("homework").select("id").eq("teacher_id", user.id),
+        isAdmin
+          ? supabase.from("classes").select("id")
+          : supabase.from("classes").select("id").eq("teacher_id", user.id),
+        isAdmin
+          ? supabase.from("homework").select("id")
+          : supabase.from("homework").select("id").eq("teacher_id", user.id),
       ]);
       const classIds = classesRes.data?.map((c) => c.id) || [];
       let studentCount = 0;
@@ -31,7 +36,7 @@ export default function TeacherDashboard() {
       });
     };
     fetchStats();
-  }, [user]);
+  }, [user, role]);
 
   const statCards = [
     { icon: Users, label: "Sınıf", value: stats.classes, color: "bg-info/10 text-info" },

@@ -20,7 +20,7 @@ interface StudentWithClass {
 }
 
 export default function TeacherStudents() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [students, setStudents] = useState<StudentWithClass[]>([]);
   const [classes, setClasses] = useState<{ id: string; name: string }[]>([]);
   const [open, setOpen] = useState(false);
@@ -29,7 +29,10 @@ export default function TeacherStudents() {
 
   const fetchData = async () => {
     if (!user) return;
-    const classesRes = await supabase.from("classes").select("id, name").eq("teacher_id", user.id);
+    const isAdmin = role === "admin";
+    const classesRes = isAdmin
+      ? await supabase.from("classes").select("id, name")
+      : await supabase.from("classes").select("id, name").eq("teacher_id", user.id);
     if (!classesRes.data?.length) return;
     setClasses(classesRes.data);
 
