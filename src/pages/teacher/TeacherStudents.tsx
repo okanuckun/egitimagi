@@ -9,14 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Users, Plus, UserPlus } from "lucide-react";
+import { Users, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 interface StudentWithClass {
-  id: string;
-  full_name: string;
-  class_id: string;
-  class_name: string;
+  id: string; full_name: string; class_id: string; class_name: string;
 }
 
 export default function TeacherStudents() {
@@ -40,10 +37,8 @@ export default function TeacherStudents() {
     const studentsRes = await supabase.from("students").select("*").in("class_id", classesRes.data.map((c) => c.id));
     setStudents(
       (studentsRes.data || []).map((s) => ({
-        id: s.id,
-        full_name: s.full_name,
-        class_id: s.class_id,
-        class_name: classMap.get(s.class_id) || "",
+        id: s.id, full_name: s.full_name,
+        class_id: s.class_id, class_name: classMap.get(s.class_id) || "",
       }))
     );
   };
@@ -54,12 +49,10 @@ export default function TeacherStudents() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.from("students").insert({
-      full_name: form.full_name,
-      class_id: form.class_id,
+      full_name: form.full_name, class_id: form.class_id,
     });
-    if (error) {
-      toast.error("Öğrenci eklenemedi: " + error.message);
-    } else {
+    if (error) toast.error("Öğrenci eklenemedi: " + error.message);
+    else {
       toast.success("Öğrenci eklendi!");
       setOpen(false);
       setForm({ full_name: "", class_id: "" });
@@ -68,16 +61,13 @@ export default function TeacherStudents() {
     setLoading(false);
   };
 
-  // Group students by class
   const studentsByClass = classes.map((c) => ({
-    ...c,
-    students: students.filter((s) => s.class_id === c.id),
+    ...c, students: students.filter((s) => s.class_id === c.id),
   }));
 
   return (
     <div className="page-container">
       <PageHeader title="Öğrenciler" subtitle="Sınıflarınızdaki öğrenciler" />
-
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button className="w-full mb-4" disabled={classes.length === 0}>
@@ -89,21 +79,14 @@ export default function TeacherStudents() {
           <form onSubmit={handleAddStudent} className="space-y-4">
             <div className="space-y-2">
               <Label>Öğrenci Adı Soyadı</Label>
-              <Input
-                value={form.full_name}
-                onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                required
-                placeholder="Ör: Ali Yılmaz"
-              />
+              <Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required placeholder="Ör: Ali Yılmaz" />
             </div>
             <div className="space-y-2">
               <Label>Sınıf</Label>
               <Select value={form.class_id} onValueChange={(v) => setForm({ ...form, class_id: v })}>
                 <SelectTrigger><SelectValue placeholder="Sınıf seçin" /></SelectTrigger>
                 <SelectContent>
-                  {classes.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
+                  {classes.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -113,7 +96,6 @@ export default function TeacherStudents() {
           </form>
         </DialogContent>
       </Dialog>
-
       {studentsByClass.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -136,9 +118,7 @@ export default function TeacherStudents() {
                     <Card key={s.id} className="card-hover">
                       <CardContent className="p-4 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-xs font-bold text-primary">
-                            {s.full_name.charAt(0).toUpperCase()}
-                          </span>
+                          <span className="text-xs font-bold text-primary">{s.full_name.charAt(0).toUpperCase()}</span>
                         </div>
                         <p className="font-medium text-sm">{s.full_name}</p>
                       </CardContent>
