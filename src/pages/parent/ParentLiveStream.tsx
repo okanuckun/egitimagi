@@ -27,6 +27,7 @@ export default function ParentLiveStream() {
   const [activeStreams, setActiveStreams] = useState<ActiveStream[]>([]);
   const [selectedStream, setSelectedStream] = useState<ActiveStream | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [wsUrl, setWsUrl] = useState<string | null>(null);
 
   const fetchActiveStreams = async () => {
     if (!user) return;
